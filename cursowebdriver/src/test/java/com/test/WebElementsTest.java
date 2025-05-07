@@ -1,201 +1,187 @@
 package com.test;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.openqa.selenium.Alert;
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.By.ByName;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.support.ui.Select;
-
+import static com.core.DriverFactory.getDriver;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 
-public class WebElementsTest {
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.openqa.selenium.Alert;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.Select;
 
-    private WebDriver driver;
+import com.core.BaseTest;
 
-    //Irá rodar Antes de cada teste (Pré-condições)
-    @BeforeEach
-    public void setUP() throws Exception{
-        System.setProperty("webdriver.chrome.driver", "C:\\dev\\drivers\\chromedriver-win64\\chromedriver.exe");
-        driver = new ChromeDriver();
-        driver.get("https://antoniotrindade.com.br/treinoautomacao/elementsweb.html");
-    }
+public class WebElementsTest extends BaseTest{
+	
+	
+	@BeforeEach
+	public void setUp() throws Exception {	
+		getDriver().get("https://antoniotrindade.com.br/treinoautomacao/elementsweb.html");
+	}	
 
-    //Irá rodar Depois de cada teste (Pós-condições)
-    //Sempre que fizer um teste, fechar o browser
-    @AfterEach
-    public void tearDown() throws Exception{
-        driver.quit();        
-    }
-
-    //Teste (Nome sempre cammel case, função smp começa com letra minúscula)
-    @Test
-    public void testHelloWorld() {
-        WebElement input = driver.findElement(By.name("txtbox1"));
-        String textoEsperado = "Hello World!";
-        input.clear();
-        input.sendKeys("Hello World!");
-        String textoDigitado = input.getDomProperty("value");
-        assertEquals(textoEsperado, textoDigitado);
-    }
-
-    @Test
-    public void testValidaTitle(){
-        assertEquals("WebElements Test Page Lab", driver.getTitle());
-    }
-
-    @Test
-    public void testEnabledandDisabledComponent() {
-        WebElement tfenable = driver.findElement(By.name("txtbox1"));
-        WebElement tfdisable = driver.findElement(By.name("txtbox2"));
-        
-        assertTrue(tfenable.isEnabled());
-        assertFalse(tfdisable.isEnabled());
-
-    }
-
-    @Test
-    public void testValidateRadioBtn(){
-        List<WebElement> radiolist = driver.findElements(By.name("radioGroup1"));
-
-        assertEquals(4, radiolist.size());
-
-        for(WebElement radio : radiolist){
-            if (radio.getDomProperty("value").equals("Radio 3")) {
-                radio.click();
-                
-            }
-        }
-
-        assertTrue(radiolist.get(2).isSelected());
-        assertFalse(radiolist.get(0).isSelected());
-        assertFalse(radiolist.get(1).isSelected());
-        assertFalse(radiolist.get(3).isSelected());
-
-    }
-
-    @Test
-    public void testValidateCheckbox() {
-        List<WebElement> checklist = driver.findElements(By.name("chkbox"));
-
-        assertEquals(4, checklist.size());
-
-        checklist.stream()
-        .filter(check -> "Check 3".equals(check.getDomProperty("value"))) 
-        .findFirst()
-        .ifPresent(WebElement::click);
-
-        checklist.stream()
-        .filter(check -> "Check 4".equals(check.getDomProperty("value")))
-        .findFirst()
-        .ifPresent(WebElement::click);
-
-        assertTrue(checklist.get(2).isSelected());
-        assertTrue(checklist.get(3).isSelected());
-        assertFalse(checklist.get(0).isSelected());
-        assertFalse(checklist.get(1).isSelected());
-        
-    }
-
-    @Test
-
-    public void testValidateSingleDropDown(){
-        WebElement singledd = driver.findElement(By.name("dropdownlist"));
-        Select selectDropSingle = new Select(singledd);
-
-        selectDropSingle.selectByIndex(0);
-        //Sleep para travar o tempo em 3s analisar teste
-        //Não é uma boa prática
-        //Thread.sleep(3000);
-        selectDropSingle.selectByContainsVisibleText("Item 7");
-        //Thread.sleep(3000);
-        selectDropSingle.selectByValue("item9");
-        
-        assertEquals("Item 9", selectDropSingle.getFirstSelectedOption().getText());
-
-    }
-
-    @Test
-    public void testValidateMultiSDropDown(){
-        WebElement multisdd = driver.findElement(By.name("multiselectdropdown"));
-        Select selectMultiDd = new Select(multisdd);
-
-        selectMultiDd.selectByContainsVisibleText("Item 5");
-        selectMultiDd.selectByContainsVisibleText("Item 8");
-        selectMultiDd.selectByContainsVisibleText("Item 9");
-
-        List<WebElement> ListSelecteds = selectMultiDd.getAllSelectedOptions();
-
-        //Valida quantos estão selecionados
-        assertEquals(3, ListSelecteds.size());
-
-        //Valida quais estão selecionados
-        assertEquals("Item 5", ListSelecteds.get(0).getText());
-        assertEquals("Item 8", ListSelecteds.get(1).getText());
-        assertEquals("Item 9", ListSelecteds.get(2).getText());
-    }
-
-    @Test
-    public void testFrameValidate(){
-        //Entra no Iframe
-        driver.switchTo().frame(0);
-
-        WebElement tfIframe = driver.findElement(By.id("tfiframe"));
-        tfIframe.sendKeys("Automação Test");
-
-        assertEquals("Automação Test", tfIframe.getDomProperty("value"));
-
-        //Retorna para o contexto default
-        driver.switchTo().defaultContent();
-    }
-
-    @Test
+	@Test
+	public void testEscreveHelloWorld() {		
+		//1. Localizar um elemento na tela
+		WebElement textFieldEnable = getDriver().findElement(By.xpath("//*[@name='txtbox1']"));
+		
+		//2. Interagir com o elemento
+		textFieldEnable.sendKeys("Hello World!!!");
+		
+		//3. Validar o resultado 
+		assertEquals("Hello World!!!", textFieldEnable.getDomProperty("value"));
+	}
+	
+	@Test
+	public void testValidaTitle() {
+		assertEquals("WebElements Test Page Lab", getDriver().getTitle());
+	}
+	
+	@Test
+	public void testHabilitadoEDesabilitado() {
+		WebElement textFieldEnable = getDriver().findElement(By.name("txtbox1"));
+		WebElement textFieldDisable = getDriver().findElement(By.name("txtbox2"));
+		
+		assertTrue(textFieldEnable.isEnabled());
+		assertFalse(textFieldDisable.isEnabled());		
+	}
+	
+	@Test
+	public void testValidaRadioButton() {
+		List<WebElement> listRadio = getDriver().findElements(By.name("radioGroup1"));		
+		assertEquals(4, listRadio.size());
+		
+		for (WebElement radio : listRadio) {
+			if (radio.getDomProperty("value").equals("Radio 3")) {
+				radio.click();
+			}
+		}
+		
+		//listRadio.get(2).click();
+		
+		assertTrue(listRadio.get(2).isSelected());
+		assertFalse(listRadio.get(0).isSelected());
+		assertFalse(listRadio.get(1).isSelected());
+		assertFalse(listRadio.get(3).isSelected());		
+	}
+	
+	@Test
+	public void testValidaCheckBoxes() {
+		List<WebElement> listCheck = getDriver().findElements(By.name("chkbox"));
+		
+		//validar o tamanho da lista
+		assertEquals(4, listCheck.size());
+		
+		for (WebElement check : listCheck) {
+			//System.out.println(check.getDomProperty("value"));
+			
+			// Operador lógico ou (||)
+			if ((check.getDomProperty("value").equals("Check 3")) 
+					|| (check.getDomProperty("value").equals("Check 4"))) {
+				check.click();
+			}		
+		}
+		
+		assertTrue(listCheck.get(2).isSelected());
+		assertTrue(listCheck.get(3).isSelected());
+		assertFalse(listCheck.get(0).isSelected());
+		assertFalse(listCheck.get(1).isSelected());
+		
+	}
+	
+	@Test
+	public void testValidaDropDownSingle() throws InterruptedException {
+		WebElement dropSingle = getDriver().findElement(By.name("dropdownlist"));		
+		Select selectDropSingle = new Select(dropSingle);
+		
+		selectDropSingle.selectByIndex(0);
+		//Sleep para travar o tempo em 3s //Não é uma boa prática
+		Thread.sleep(3000);
+		selectDropSingle.selectByValue("item9");
+		Thread.sleep(3000);
+		selectDropSingle.selectByVisibleText("Item 7");
+		
+		assertEquals("Item 7", selectDropSingle.getFirstSelectedOption().getText());
+				
+	}
+	
+	@Test
+	public void testValidaDropDownMultiple() {
+		WebElement dropMulti = getDriver().findElement(By.name("multiselectdropdown"));
+		Select selectDropMulti = new Select(dropMulti);
+		
+		selectDropMulti.selectByVisibleText("Item 5");
+		selectDropMulti.selectByVisibleText("Item 8");
+		selectDropMulti.selectByVisibleText("Item 9");
+		
+		List<WebElement> listSelected = selectDropMulti.getAllSelectedOptions();
+		
+		//Valida quantos
+		assertEquals(3, listSelected.size());
+		
+		//Valida quais
+		assertEquals("Item 5", listSelected.get(0).getText());
+		assertEquals("Item 8", listSelected.get(1).getText());
+		assertEquals("Item 9", listSelected.get(2).getText());		
+	}
+	
+	@Test
+	public void testValidaIFrame() {
+		//entra no iframe
+		getDriver().switchTo().frame(0);
+		
+		WebElement tfIframe = getDriver().findElement(By.id("tfiframe"));
+		tfIframe.sendKeys("Automação de teste");
+		
+		assertEquals("Automação de teste", tfIframe.getDomProperty("value"));
+		
+		//retorna para o contexto default
+		getDriver().switchTo().defaultContent();
+	}
+	
+	@Test
 	public void testValidaAlerts() {
-		WebElement btnAlert = driver.findElement(By.name("alertbtn"));
+		WebElement btnAlert = getDriver().findElement(By.name("alertbtn"));
 		btnAlert.click();
 		
-		Alert alert = driver.switchTo().alert();
+		Alert alert = getDriver().switchTo().alert();
 		assertEquals("Eu sou um alerta!", alert.getText());
 		
 		alert.accept();
 		
-		WebElement btnConfirm = driver.findElement(By.name("confirmbtn"));
+		WebElement btnConfirm = getDriver().findElement(By.name("confirmbtn"));
 		btnConfirm.click();
 		
-		Alert confirm = driver.switchTo().alert();
+		Alert confirm = getDriver().switchTo().alert();
 		assertEquals("Pressione um botão!", confirm.getText());
 		
 		confirm.dismiss();	
 		
 	}
-
-    @Test
+	
+	@Test
 	public void testFluxoAlerts() {
-		WebElement btnPrompt = driver.findElement(By.id("promptBtn"));
+		WebElement btnPrompt = getDriver().findElement(By.id("promptBtn"));
 		btnPrompt.click();
 		
-		Alert alertDigiteAno = driver.switchTo().alert();
+		Alert alertDigiteAno = getDriver().switchTo().alert();
 		alertDigiteAno.sendKeys("2025");
 		alertDigiteAno.accept();
 		
-		Alert alertValidaAno = driver.switchTo().alert();
+		Alert alertValidaAno = getDriver().switchTo().alert();
 		
 		assertEquals("O ano é 2025?", alertValidaAno.getText());
 		alertValidaAno.accept();
 		
-		Alert alertFeito = driver.switchTo().alert();
+		Alert alertFeito = getDriver().switchTo().alert();
 		
 		assertEquals("Feito!", alertFeito.getText());
 		alertFeito.accept();
 	}
-
+	
 
 }
