@@ -28,12 +28,12 @@ public class DriverFactory {
 		
 		if (browser.equals("chrome")) {
 		
-			System.setProperty("webdriver.chrome.driver", path + "chromedriver");
+			System.setProperty("webdriver.chrome.driver", path + "chromedriver.exe");
 			driver = new ChromeDriver();
 		}		
 		
 		else if (browser.equals("chrome-headless")){
-			System.setProperty("webdriver.chrome.driver", path + "chromedriver");
+			System.setProperty("webdriver.chrome.driver", path + "chromedriver.exe");
 			
 			ChromeOptions options = new ChromeOptions();
 			options.addArguments("--headless");
